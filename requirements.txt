@@ -1,5 +1,4 @@
 psutil
-time
 requests
 keyboard
 termcolor
