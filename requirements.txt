@@ -1,1 +1,8 @@
-
+subprocess
+psutil
+re
+os
+time
+requests
+keyboard
+termcolor
