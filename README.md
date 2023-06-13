@@ -1,6 +1,8 @@
 # Status-PY
 This basic python code lets you see things that you need to run as server owner
 
+NEED TO BE RAN IN SUDO
+
 ![obrazek](https://github.com/richi704/Status-PY/assets/101471243/11bdd108-af5d-48d9-ae5b-50669797dc74)
 
 Menu:
