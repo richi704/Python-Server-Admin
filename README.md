@@ -5,6 +5,18 @@ NEED TO BE RAN IN SUDO
 
 ![obrazek](https://github.com/richi704/Status-PY/assets/101471243/11bdd108-af5d-48d9-ae5b-50669797dc74)
 
+
+If you want to make the .py file executable here are the commands for it
+
+sudo apt install pyinstaller
+
+pyinstaller --onefile status.py
+
+
+
+
+
+
 Menu:
 1. Check Network Status
 2. Check Disk Status
