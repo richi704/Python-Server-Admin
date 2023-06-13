@@ -2,9 +2,13 @@ import subprocess
 import psutil
 import re
 import os
+import sys
 import time
+import signal
 import requests
 import keyboard
+import speedtest
+import urllib.request
 from termcolor import colored
 
 def clear_screen():
@@ -16,12 +20,25 @@ def clear_screen():
    
 def display_logo():
     logo = '''
-┬─┐┬┌─┐┬ ┬┬
-├┬┘││  ├─┤│
-┴└─┴└─┘┴ ┴┴
+                 ┬─┐┬┌─┐┬ ┬┬
+		 ├┬┘││  ├─┤│
+		 ┴└─┴└─┘┴ ┴┴
     '''
 
-    print(colored(logo, 'light_cyan'))
+    # Split the logo into lines
+    logo_lines = logo.strip().split('\n')
+
+    # Calculate the width of the console
+    console_width = os.get_terminal_size().columns
+
+    # Calculate the number of spaces needed to center each line of the logo
+    num_spaces = (console_width - len(logo_lines[0])) // 2
+
+    # Print the logo with centered alignment
+    print('\n' * 2)  # Add some vertical spacing
+    for line in logo_lines:
+        print(' ' * num_spaces + colored(line.strip(), 'cyan'))
+    print('\n' * 2)  # Add some vertical spacing
          
 def check_network_status():
     try:
@@ -79,16 +96,192 @@ def check_apache_status():
 
 def display_menu():
     print(colored("Menu:", "yellow"))
-    print(colored("1. Check Network Status", "light_green"))
-    print(colored("2. Check Disk Status", "light_green"))
-    print(colored("3. Check CPU Load", "light_green"))
-    print(colored("4. Check GPU Load", "light_green"))
-    print(colored("5. Check Apache2 Status", "light_green"))
-    print(colored("6. CPU Stress Test", "light_green"))
+    print(colored("1. Check Network Status				11. Test Internet Speed", "light_green"))
+    print(colored("2. Check Disk Status				12. Run Htop", "light_green"))
+    print(colored("3. Check CPU Load				13. Run IfTop", "light_green"))
+    print(colored("4. Check GPU Load				14. Run Ranger", "light_green"))
+    print(colored("5. Check Apache2 Status				15. Package Installer", "light_green"))
+    print(colored("6. CPU Stress Test				16. Package Uninstaller", "light_green"))
     print(colored("7. GPU Stress Test", "light_green"))
     print(colored("8. List Services ON", "light_green"))
-    print(colored("E. Exit", "light_red"))
+    print(colored("9. Ping LocalHost", "light_green"))
+    print(colored("10. Ping IP/Domain", "light_green"))
+    print(colored("E. Exit						S. Update System", "light_red"))
 
+def update_system():
+    print(colored("Updating the system...", "yellow"))
+    update_command = ""
+
+    if os.name == 'nt':
+        print("System update is not supported on Windows.")
+        return
+    elif os.name == 'posix':
+        if os.path.exists('/usr/bin/apt-get'):
+            update_command = 'apt-get update && apt-get upgrade'
+        elif os.path.exists('/usr/bin/yum'):
+            update_command = 'yum update'
+        else:
+            print("Unable to determine the system updater command.")
+            return
+
+    subprocess.run(update_command, shell=True)
+
+    print(colored("System update completed.", "green"))
+    
+def uninstall_packages():
+    print(colored("Uninstalling packages...", "yellow"))
+    package_manager = ""
+
+    if os.name == 'nt':
+        print("Package uninstallation is not supported on Windows.")
+        return
+    elif os.name == 'posix':
+        if os.path.exists('/usr/bin/apt-get'):
+            package_manager = 'apt-get'
+        elif os.path.exists('/usr/bin/yum'):
+            package_manager = 'yum'
+        else:
+            print("Unable to determine the package manager.")
+            return
+
+    packages = input("Enter the packages you want to uninstall (comma-separated): ").split(',')
+    packages = [pkg.strip() for pkg in packages]
+
+    uninstall_command = [package_manager, 'remove']
+    uninstall_command.extend(packages)
+
+    subprocess.run(uninstall_command)
+
+    print(colored("Package uninstallation completed.", "green"))
+    
+def install_packages():
+    print(colored("Installing packages...", "yellow"))
+    package_manager = ""
+
+    if os.name == 'nt':
+        print("Package installation is not supported on Windows.")
+        return
+    elif os.name == 'posix':
+        if os.path.exists('/usr/bin/apt-get'):
+            package_manager = 'apt-get'
+        elif os.path.exists('/usr/bin/yum'):
+            package_manager = 'yum'
+        else:
+            print("Unable to determine the package manager.")
+            return
+
+    packages = input("Enter the packages you want to install (comma-separated): ").split(',')
+    packages = [pkg.strip() for pkg in packages]
+
+    install_command = [package_manager, 'install']
+    install_command.extend(packages)
+
+    subprocess.run(install_command)
+
+    print(colored("Package installation completed.", "green"))
+    
+def run_ranger():
+    print(colored("Running ranger...", "yellow"))
+    ranger_process = subprocess.Popen(["ranger"], preexec_fn=os.setsid)
+
+    def stop_ranger(e):
+        os.killpg(os.getpgid(ranger_process.pid), signal.SIGTERM)
+        keyboard.unhook_all()
+
+    keyboard.on_press_key('q', stop_ranger)
+    ranger_process.wait()
+
+    print(colored("Exited ranger.", "green"))
+    
+def run_iftop():
+    print(colored("Running iftop...", "yellow"))
+    iftop_process = subprocess.Popen(["iftop"], preexec_fn=os.setsid)
+
+    def stop_iftop(e):
+        os.killpg(os.getpgid(iftop_process.pid), signal.SIGTERM)
+        keyboard.unhook_all()
+
+    keyboard.on_press_key('q', stop_iftop)
+    iftop_process.wait()
+
+    print(colored("Exited iftop.", "green"))
+    
+def run_htop():
+    print(colored("Running htop...", "yellow"))
+    print(colored("Press Q to exit htop", "yellow"))
+    htop_process = subprocess.Popen(["htop"], preexec_fn=os.setsid)
+
+    def stop_htop(e):
+        os.killpg(os.getpgid(htop_process.pid), signal.SIGTERM)
+        keyboard.unhook_all()
+
+    keyboard.on_press_key('q', stop_htop)
+    htop_process.wait()
+
+    print(colored("Exited htop.", "green"))
+    
+def measure_internet_speed():
+    print("Measuring internet speed...")
+    
+    speed_test = speedtest.Speedtest()
+    download_speed = speed_test.download() / 1024 / 1024
+    upload_speed = speed_test.upload() / 1024 / 1024
+    
+    print(f"Download speed: {download_speed:.2f} Mbps")
+    print(f"Upload speed: {upload_speed:.2f} Mbps")
+    print("Speed measurement completed.")
+
+def ping_localhost():
+    print(colored("Pinging localhost...", "yellow"))
+    print(colored("Press Q to exit Ping", "yellow"))
+    
+    ping_process = subprocess.Popen(['ping', 'localhost'], stdout=subprocess.PIPE)
+
+    start_time = time.time()
+    stop_flag = False
+
+    def stop_ping(e):
+        nonlocal stop_flag
+        stop_flag = True
+        ping_process.terminate()
+
+    keyboard.on_press_key('q', stop_ping)
+
+    while ping_process.poll() is None and not stop_flag:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > 5:  # Check for ping response every 5 seconds
+            print(ping_process.stdout.readline().decode().strip())
+            start_time = time.time()
+
+    if not stop_flag:
+        print(colored("Ping completed.", "green"))
+        
+def ping_address():
+    address = input("Enter IP address or domain to ping: ")
+    print(colored(f"Pinging {address}...", "yellow"))
+    print(colored(f"Press Q to exit Ping", "yellow"))
+    
+    ping_process = subprocess.Popen(['ping', address], stdout=subprocess.PIPE)
+
+    start_time = time.time()
+    stop_flag = False
+
+    def stop_ping(e):
+        nonlocal stop_flag
+        stop_flag = True
+        ping_process.terminate()
+
+    keyboard.on_press_key('q', stop_ping)
+
+    while ping_process.poll() is None and not stop_flag:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > 5:  # Check for ping response every 5 seconds
+            print(ping_process.stdout.readline().decode().strip())
+            start_time = time.time()
+
+    if not stop_flag:
+        print(colored("Ping completed.", "green"))
+        
 def list_services_on():
     print("Services currently ON:")
     services = ['apache2', 'mysql', 'nginx']
@@ -150,6 +343,10 @@ def perform_gpu_stress_test():
 
         
 def main():
+    if not os.geteuid() == 0:
+        print("This program needs to be run with sudo privileges.")
+        sys.exit(1)
+
     while True:
         clear_screen()  # Clear the screen before displaying the menu
         display_logo()  # Display the logo
@@ -193,6 +390,51 @@ def main():
                 print(colored(f"Failed to perform GPU stress test: {str(e)}", 'red'))
         elif choice == '8':
              list_services_on()
+        elif choice == '9':
+            try:
+                ping_localhost()
+            except Exception as e:
+                print(colored(f"Failed to Ping LocalHost: {str(e)}", 'red'))
+        elif choice == '10':
+            try:
+                ping_address()
+            except Exception as e:
+                print(colored(f"Failed to Ping Address: {str(e)}", 'red'))
+        elif choice == '11':
+            try:
+                measure_internet_speed()
+            except Exception as e:
+                print(colored(f"Failed to Test Internet Speed: {str(e)}", 'red'))
+        elif choice == '12':
+            try:
+                run_htop()
+            except Exception as e:
+                print(colored(f"Failed to run Htop: {str(e)}", 'red'))
+        elif choice == '13':
+            try:
+                run_iftop()
+            except Exception as e:
+                print(colored(f"Failed to run Iftop: {str(e)}", 'red'))
+        elif choice == '14':
+            try:
+                run_ranger()
+            except Exception as e:
+                print(colored(f"Failed to run Ranger: {str(e)}", 'red'))
+        elif choice == '15':
+            try:
+                install_packages()
+            except Exception as e:
+                print(colored(f"Failed to Download Package: {str(e)}", 'red'))
+        elif choice == '16':
+            try:
+                uninstall_packages()
+            except Exception as e:
+                print(colored(f"Failed to Update System: {str(e)}", 'red'))
+        elif choice == 's':
+            try:
+                update_system()
+            except Exception as e:
+                print(colored(f"Failed to Uninstall Package: {str(e)}", 'red'))
         elif choice == 'e':
               print("Exiting...")
               break
@@ -203,5 +445,6 @@ def main():
         clear_screen()  # Clear the screen before going back to the menu
 
 # Call the main function to start the program
-main()
+if __name__ == "__main__":
+    main()
 clear_screen()
