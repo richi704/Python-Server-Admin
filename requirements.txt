@@ -2,3 +2,6 @@ psutil
 requests
 keyboard
 termcolor
+speedtest-cil
+speedtest
+keyboard
