@@ -3,7 +3,7 @@ This basic python code lets you see things that you need to run as server owner
 
 NEED TO BE RAN IN SUDO
 
-![obrazek](https://github.com/richi704/Status-PY/assets/101471243/11bdd108-af5d-48d9-ae5b-50669797dc74)
+![obrazek](https://github.com/richi704/Status-PY/assets/101471243/e7b987ab-9215-412d-a83d-7e9e6170928c)
 
 
 
@@ -41,6 +41,7 @@ MENU
 14. Run Ranger (file manager)
 15. Package Installer
 16. Package Uninstaller
+17. SSH Connection
 
 S. System update
 
