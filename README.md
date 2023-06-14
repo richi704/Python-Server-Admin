@@ -13,11 +13,10 @@ sudo apt install pyinstaller
 pyinstaller --onefile status.py
 
 
+MENU
+--------------------------------------------------------------------------------
 
 
-
-
-Menu:
 1. Check Network Status
 2. Check Disk Status
 3. Check CPU Load
