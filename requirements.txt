@@ -5,3 +5,7 @@ termcolor
 speedtest-cil
 speedtest
 keyboard
+sshpass
+htop
+iftop
+ranger
