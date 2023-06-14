@@ -104,11 +104,55 @@ def display_menu():
     print(colored("5. Check Apache2 Status				15. Package Installer", "light_green"))
     print(colored("6. CPU Stress Test				16. Package Uninstaller", "light_green"))
     print(colored("7. GPU Stress Test				17. SSH Connection", "light_green"))
-    print(colored("8. List Services ON", "light_green"))
+    print(colored("8. List Services ON				18. Live System Stats", "light_green"))
     print(colored("9. Ping LocalHost", "light_green"))
     print(colored("10. Ping IP/Domain", "light_green"))
     print(colored("E. Exit						S. Update System", "light_red"))
 
+def get_gpu_stats():
+    try:
+        output = subprocess.check_output(["nvidia-smi", "--query-gpu=utilization.gpu,power.draw", "--format=csv,noheader,nounits"]).decode("utf-8").strip().split("\n")
+        gpu_load, gpu_power = output[0].split(", ")
+        return float(gpu_load), float(gpu_power)
+    except subprocess.CalledProcessError:
+        return None, None
+
+
+def get_color(load):
+    if load < 30:
+        return "light_green"
+    elif load >= 30 and load < 60:
+        return "yellow"
+    else:
+        return "red"
+
+def print_live_stats():
+    while True:
+        cpu_load = psutil.cpu_percent()
+        gpu_load, gpu_power = get_gpu_stats()
+        disk_load = psutil.disk_usage("/").percent
+        memory_usage = psutil.virtual_memory().percent
+
+        os.system("clear")  # Clears the terminal screen
+        display_logo() # Display logo
+
+        print("\n" + "-" * 30 + " Live System Stats " + "-" * 30)
+        print(f"CPU Load: {colored(f'{cpu_load:6.2f}%', get_color(cpu_load))}")
+
+        if gpu_load is not None and gpu_power is not None:
+            print(f"GPU Load: {colored(f'{gpu_load:6.2f}%', get_color(gpu_load))}")
+            print(f"GPU Power: {colored(f'{gpu_power:6.2f} W', get_color(gpu_power))}")
+
+        print(f"Disk Load: {colored(f'{disk_load:6.2f}%', get_color(disk_load))}")
+        print(f"Memory Usage: {colored(f'{memory_usage:6.2f}%', get_color(memory_usage))}")
+        print("-" * 75)
+
+        if keyboard.is_pressed("q"): # If pressed "q" the print_live_stats will close
+            break
+
+        time.sleep(1)  # Delay to refresh the stats every 1 seconds
+
+        
 def ssh_connection():
     host = input(colored("Enter the host address: ", "cyan"))
     port = input(colored("Enter the port number: ", "cyan"))
@@ -361,7 +405,7 @@ def main():
         sys.exit(1)
 
     while True:
-        clear_screen()  # Clear the screen before displaying the menu
+        clear_screen()
         display_logo()
         display_menu()
         choice = input("Enter your choice: ")
@@ -448,11 +492,16 @@ def main():
                 ssh_connection()
             except Exception as e:
                 print(colored(f"Failed to Connect to Host: {str(e)}", 'red'))
+        elif choice == '18':
+            try:
+                print_live_stats()
+            except Exception as e:
+                print(colored(f"Failed to Display the System Stats: {str(e)}", 'red'))
         elif choice == 's':
             try:
                 update_system()
             except Exception as e:
-                print(colored(f"Failed to Uninstall Package: {str(e)}", 'red'))
+                print(colored(f"Failed to Exit the Menu: {str(e)}", 'red'))
         elif choice == 'e':
               print("Exiting...")
               break
