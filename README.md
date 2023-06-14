@@ -36,9 +36,9 @@ MENU
 9. Ping LocalHost
 10. Ping IP/Domain
 11. Test Internet Speed
-12. Run Htop
-13. Run IfTop
-14. Run Ranger
+12. Run Htop (process monitoring)
+13. Run IfTop (traffic monitoring)
+14. Run Ranger (file manager)
 15. Package Installer
 16. Package Uninstaller
 
