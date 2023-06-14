@@ -3,7 +3,7 @@ This basic python code lets you see things that you need to run as server owner
 
 NEED TO BE RAN IN SUDO
 
-![obrazek](https://github.com/richi704/Status-PY/assets/101471243/e7b987ab-9215-412d-a83d-7e9e6170928c)
+![obrazek](https://github.com/richi704/Status-PY/assets/101471243/d90d18e1-fbf3-4f8f-94b3-e861ea31eb56)
 
 
 
