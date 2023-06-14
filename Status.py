@@ -9,7 +9,8 @@ import requests
 import keyboard
 import speedtest
 import urllib.request
-from termcolor import colored
+from getpass import getpass
+from termcolor import colored, cprint
 
 def clear_screen():
     # Clear the terminal screen
@@ -39,7 +40,7 @@ def display_logo():
     for line in logo_lines:
         print(' ' * num_spaces + colored(line.strip(), 'cyan'))
     print('\n' * 2)  # Add some vertical spacing
-         
+ 
 def check_network_status():
     try:
         # Send an HTTP GET request to a well-known website
@@ -102,12 +103,24 @@ def display_menu():
     print(colored("4. Check GPU Load				14. Run Ranger", "light_green"))
     print(colored("5. Check Apache2 Status				15. Package Installer", "light_green"))
     print(colored("6. CPU Stress Test				16. Package Uninstaller", "light_green"))
-    print(colored("7. GPU Stress Test", "light_green"))
+    print(colored("7. GPU Stress Test				17. SSH Connection", "light_green"))
     print(colored("8. List Services ON", "light_green"))
     print(colored("9. Ping LocalHost", "light_green"))
     print(colored("10. Ping IP/Domain", "light_green"))
     print(colored("E. Exit						S. Update System", "light_red"))
 
+def ssh_connection():
+    host = input(colored("Enter the host address: ", "cyan"))
+    port = input(colored("Enter the port number: ", "cyan"))
+    username = input(colored("Enter your username: ", "green"))
+    password = input(colored("Enter your password: ", "yellow"))
+
+    cprint("Establishing SSH connection...", "magenta")
+
+    command = f"sshpass -p '{password}' ssh -X {username}@{host} -p {port}"
+    subprocess.call(command, shell=True)
+    print(colored("SSH connection closed.", "light_red"))
+    
 def update_system():
     print(colored("Updating the system...", "yellow"))
     update_command = ""
@@ -349,7 +362,7 @@ def main():
 
     while True:
         clear_screen()  # Clear the screen before displaying the menu
-        display_logo()  # Display the logo
+        display_logo()
         display_menu()
         choice = input("Enter your choice: ")
 
@@ -430,6 +443,11 @@ def main():
                 uninstall_packages()
             except Exception as e:
                 print(colored(f"Failed to Update System: {str(e)}", 'red'))
+        elif choice == '17':
+            try:
+                ssh_connection()
+            except Exception as e:
+                print(colored(f"Failed to Connect to Host: {str(e)}", 'red'))
         elif choice == 's':
             try:
                 update_system()
