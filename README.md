@@ -3,7 +3,7 @@ This basic python code lets you see things that you need to run as server owner
 
 NEED TO BE RAN IN SUDO
 
-![obrazek](https://github.com/richi704/Status-PY/assets/101471243/471db75c-aca0-403b-acff-8f12a73cdf3a)
+![obrazek](https://github.com/richi704/Status-PY/assets/101471243/7e1861d4-324a-467d-9652-13affd517943)
 
 
 
@@ -45,5 +45,7 @@ MENU
 18. Live System Stats
 
 S. System update
+
+T. Tips
 
 
