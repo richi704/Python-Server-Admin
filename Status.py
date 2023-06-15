@@ -22,8 +22,8 @@ def clear_screen():
 def display_logo():
     logo = '''
                  ┬─┐┬┌─┐┬ ┬┬
-		 ├┬┘││  ├─┤│
-		 ┴└─┴└─┘┴ ┴┴
+		         ├┬┘││  ├─┤│
+		         ┴└─┴└─┘┴ ┴┴
     '''
 
     # Split the logo into lines
@@ -107,8 +107,30 @@ def display_menu():
     print(colored("8. List Services ON				18. Live System Stats", "light_green"))
     print(colored("9. Ping LocalHost", "light_green"))
     print(colored("10. Ping IP/Domain", "light_green"))
-    print(colored("E. Exit						S. Update System", "light_red"))
+    print(colored("E. Exit			T. Tips			S. Update System", "light_red"))
 
+def print_tips():
+    tips = [
+        "Tip 1: If some of the features dont work please submit your isues to the github page.",
+        "Tip 2: Press q to quit (iftop, htop, ranger, Live System Stats).",
+        "Tip 3: Backup your important files to avoid data loss.",
+        "Tip 4: Keep your system clean by removing unused programs and files.",
+        "Tip 5: Regularly monitor your network for any suspicious activity.",
+    ]
+
+    os.system("clear")  # Clears the terminal screen
+    display_logo()
+
+    print(colored("Tips:", "yellow"))
+    print("1.	If some of the features dont work please submit your isues to the github page")
+    print("	")
+    print("2.	Press q to quit (iftop, htop, ranger, Live System Stats, and pings)")
+    print("	")
+    print("3.	Tipe exit to quit the SSH")
+    print("	")
+    print("4.	Package Installer and Package Uninstaller is based as apt command")
+    print("	")
+        
 def get_gpu_stats():
     try:
         output = subprocess.check_output(["nvidia-smi", "--query-gpu=utilization.gpu,power.draw", "--format=csv,noheader,nounits"]).decode("utf-8").strip().split("\n")
@@ -408,7 +430,7 @@ def main():
         clear_screen()
         display_logo()
         display_menu()
-        choice = input("Enter your choice: ")
+        choice = input(colored("Enter your choice: ", "blue"))
 
         if choice == '1':
             try:
@@ -497,6 +519,11 @@ def main():
                 print_live_stats()
             except Exception as e:
                 print(colored(f"Failed to Display the System Stats: {str(e)}", 'red'))
+        elif choice == 't':
+            try:
+                print_tips()
+            except Exception as e:
+                print(colored(f"Failed to load tips: {str(e)}", 'red'))
         elif choice == 's':
             try:
                 update_system()
@@ -508,7 +535,7 @@ def main():
         else:
             print("Invalid choice. Please try again.")
 
-        input("Press Enter to continue...")
+        input(colored("Press Enter to continue...", "light_red"))
         clear_screen()  # Clear the screen before going back to the menu
 
 # Call the main function to start the program
