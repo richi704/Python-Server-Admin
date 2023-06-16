@@ -122,13 +122,16 @@ def print_tips():
     display_logo()
 
     print(colored("Tips:", "yellow"))
+    print("	")
     print("1.	If some of the features dont work please submit your isues to the github page")
     print("	")
     print("2.	Press q to quit (iftop, htop, ranger, Live System Stats, and pings)")
+    print("	If q dosent work hold it for quick sec")
     print("	")
     print("3.	Tipe exit to quit the SSH")
     print("	")
     print("4.	Package Installer and Package Uninstaller is based as apt command")
+    print("	")
     print("	")
         
 def get_gpu_stats():
