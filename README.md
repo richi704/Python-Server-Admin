@@ -18,7 +18,7 @@ If you want to make the .py file executable here are the commands for it
 
 "sudo apt install pyinstaller"
 
-"pyinstaller --onefile status.py"
+"pyinstaller --onefile admin.py"
 
 
 MENU
